@@ -1,0 +1,2574 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>الاسرة ✨♥ - الدردشة الحية</title>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Tahoma', 'Geneva', 'Verdana', sans-serif;
+        }
+        
+        :root {
+            --primary: #9D7AD6;
+            --secondary: #B39DDB;
+            --accent: #D1C4E9;
+            --light: #F3E5F5;
+            --dark: #4A2E5D;
+            --text: #5D3B7A;
+            --gold: #FFD166;
+            --blue: #8ECAE6;
+            --purple: #C8B6FF;
+            --green: #8AC926;
+            --shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        body {
+            background: linear-gradient(135deg, #E1BEE7 0%, #B39DDB 50%, #D1C4E9 100%);
+            min-height: 100vh;
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+            max-width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+        }
+        
+        .phone-container {
+            width: 100%;
+            max-width: 450px;
+            background: white;
+            min-height: 95vh;
+            box-shadow: 0 0 30px rgba(0,0,0,0.1);
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+        
+        /* =========== شاشة كلمة السر =========== */
+        .password-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #7E57C2 0%, #5E35B1 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+            text-align: center;
+            color: white;
+            border-radius: 20px;
+        }
+        
+        .password-screen h2 {
+            margin-bottom: 15px;
+            font-size: 2.2rem;
+            font-weight: 800;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(to right, #FFD700, #FFA500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .password-subtitle {
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+            max-width: 80%;
+        }
+        
+        .password-input-container {
+            position: relative;
+            width: 100%;
+            max-width: 300px;
+            margin: 20px 0;
+        }
+        
+        .password-input {
+            width: 100%;
+            padding: 18px 50px 18px 20px;
+            border: none;
+            border-radius: 15px;
+            text-align: center;
+            font-size: 1.3rem;
+            letter-spacing: 10px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            background: rgba(255, 255, 255, 0.95);
+            color: var(--primary);
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .password-input:focus {
+            outline: none;
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+            transform: translateY(-2px);
+        }
+        
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+            font-size: 1.3rem;
+            padding: 5px;
+        }
+        
+        .password-btn {
+            background: linear-gradient(to right, #FFD700, #FFA500);
+            color: #5D3B7A;
+            border: none;
+            padding: 16px 40px;
+            border-radius: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            box-shadow: 0 6px 15px rgba(255, 215, 0, 0.3);
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .password-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 215, 0, 0.4);
+        }
+        
+        .password-error {
+            color: #FFD700;
+            margin-top: 15px;
+            display: none;
+            font-weight: bold;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+        
+        .password-icon {
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+            color: #FFD700;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* رسالة خصوصية */
+        .privacy-message {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 12px;
+            margin: 20px 0;
+            text-align: center;
+            font-size: 0.9rem;
+            max-width: 300px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        /* =========== قسم الدردشة الكاملة =========== */
+        .fullscreen-chat-section {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            z-index: 2000;
+            display: none;
+            flex-direction: column;
+            border-radius: 0;
+        }
+        
+        .fullscreen-chat-section.active {
+            display: flex;
+        }
+        
+        .chat-header {
+            background: linear-gradient(135deg, var(--primary), #7E57C2);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            min-height: 80px;
+        }
+        
+        .chat-partner-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .partner-avatar {
+            width: 50px;
+            height: 50px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .partner-details h4 {
+            margin: 0;
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+        
+        .online-status {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 3px;
+        }
+        
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background: #4CAF50;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.1); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        
+        .chat-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .chat-btn {
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .chat-btn:hover {
+            background: rgba(255,255,255,0.25);
+            transform: scale(1.1);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #faf7ff 0%, #f2edff 100%);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        /* تحسين الرسائل بشكل كبير */
+        .chat-message {
+            max-width: 85%;
+            animation: fadeInUp 0.3s ease;
+            position: relative;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .message-received {
+            align-self: flex-start;
+            margin-right: auto;
+        }
+        
+        .message-sent {
+            align-self: flex-end;
+            margin-left: auto;
+        }
+        
+        .message-content {
+            padding: 18px 22px;
+            border-radius: 22px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            position: relative;
+            max-width: 100%;
+            word-wrap: break-word;
+            line-height: 1.6;
+        }
+        
+        .message-received .message-content {
+            background: white;
+            border: 1px solid rgba(209, 196, 233, 0.3);
+            border-top-right-radius: 8px;
+        }
+        
+        .message-sent .message-content {
+            background: linear-gradient(135deg, var(--primary), #7E57C2);
+            color: white;
+            border-top-left-radius: 8px;
+            box-shadow: 0 4px 20px rgba(157, 122, 214, 0.25);
+        }
+        
+        /* تكبير الخط بشكل كبير للوضوح */
+        .message-sender {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .message-received .message-sender {
+            color: var(--primary);
+        }
+        
+        .message-sent .message-sender {
+            color: rgba(255,255,255,0.95);
+        }
+        
+        .message-text {
+            font-size: 1.25rem !important; /* تكبير النص بشكل كبير */
+            line-height: 1.7;
+            margin-bottom: 10px;
+        }
+        
+        .message-time {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            text-align: left;
+            margin-top: 8px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .message-sent .message-time {
+            color: rgba(255,255,255,0.85);
+        }
+        
+        .message-status {
+            position: absolute;
+            left: -25px;
+            bottom: 10px;
+            color: var(--primary);
+            font-size: 1rem;
+        }
+        
+        .typing-indicator {
+            padding: 15px 20px;
+            background: rgba(157, 122, 214, 0.1);
+            text-align: center;
+            color: var(--primary);
+            font-size: 1rem;
+            display: none;
+            border-top: 1px solid rgba(157, 122, 214, 0.1);
+        }
+        
+        .chat-input-container {
+            display: flex;
+            align-items: center;
+            padding: 18px 20px;
+            background: white;
+            border-top: 2px solid rgba(0,0,0,0.1);
+            gap: 12px;
+            border-top: 2px solid rgba(157, 122, 214, 0.1);
+        }
+        
+        .input-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .input-btn {
+            background: #f8f5ff;
+            border: 1px solid rgba(209, 196, 233, 0.3);
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            cursor: pointer;
+            color: var(--text);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .input-btn:hover {
+            background: var(--accent);
+            color: var(--primary);
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        #fullscreenChatInput {
+            flex: 1;
+            border: 2px solid rgba(209, 196, 233, 0.3);
+            padding: 16px 20px;
+            font-size: 1.15rem;
+            resize: none;
+            max-height: 150px;
+            background: #fcfaff;
+            border-radius: 28px;
+            transition: all 0.3s;
+            line-height: 1.6;
+            font-family: inherit;
+        }
+        
+        #fullscreenChatInput:focus {
+            outline: none;
+            background: white;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(157, 122, 214, 0.1);
+        }
+        
+        .send-btn {
+            background: linear-gradient(135deg, var(--primary), #7E57C2);
+            color: white;
+            border: none;
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(157, 122, 214, 0.3);
+        }
+        
+        .send-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(157, 122, 214, 0.4);
+        }
+        
+        /* زر الخروج من الدردشة الكاملة */
+        .exit-chat-btn {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 10px;
+        }
+        
+        .exit-chat-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        /* =========== قسم اليوميات المحسن =========== */
+        .media-attachments {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 15px;
+            margin: 15px 0;
+            border: 2px dashed rgba(157, 122, 214, 0.3);
+        }
+        
+        .attachment-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px;
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+            border-left: 4px solid var(--primary);
+            transition: all 0.3s;
+        }
+        
+        .attachment-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(157, 122, 214, 0.1);
+        }
+        
+        .attachment-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent), var(--primary));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+        
+        .attachment-details {
+            flex: 1;
+        }
+        
+        .attachment-name {
+            font-weight: bold;
+            color: var(--dark);
+            margin-bottom: 4px;
+            word-break: break-all;
+        }
+        
+        .attachment-size {
+            font-size: 0.8rem;
+            color: #888;
+        }
+        
+        .attachment-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .attachment-btn {
+            background: none;
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        
+        .attachment-btn:hover {
+            background: rgba(157, 122, 214, 0.1);
+            transform: scale(1.1);
+        }
+        
+        /* تحسين أزرار الوسائط */
+        .media-buttons {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: white;
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 15px 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            max-width: 100%;
+            margin: 20px auto;
+            transition: all 0.3s;
+        }
+        
+        .media-buttons:hover {
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+            transform: translateY(-3px);
+        }
+        
+        .media-button {
+            color: #666;
+            transition: all 0.3s ease-in-out;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+        
+        .media-button .icon-label {
+            font-size: 0.7rem;
+            color: var(--text);
+            margin-top: 5px;
+        }
+        
+        .media-button.image:hover {
+            color: #e53e3e;
+        }
+        
+        .media-button.video:hover {
+            color: #3182ce;
+        }
+        
+        .media-button.audio:hover {
+            color: #38a169;
+        }
+        
+        .media-button.other:hover {
+            color: #805ad5;
+        }
+        
+        .media-preview {
+            margin: 20px 0;
+            display: none;
+        }
+        
+        .media-preview.active {
+            display: block;
+        }
+        
+        .preview-item {
+            position: relative;
+            margin-bottom: 15px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .preview-item img, .preview-item video {
+            width: 100%;
+            max-height: 220px;
+            object-fit: cover;
+        }
+        
+        .audio-preview {
+            width: 100%;
+            padding: 15px;
+            background: #f7fafc;
+            border-radius: 15px;
+            text-align: center;
+        }
+        
+        .remove-media {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(255, 0, 0, 0.8);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .remove-media:hover {
+            background: rgba(255, 0, 0, 1);
+            transform: scale(1.1);
+        }
+        
+        /* =========== باقي أنماط الموقع =========== */
+        .header {
+            background: linear-gradient(135deg, var(--primary), #7E57C2);
+            color: white;
+            padding: 25px 15px;
+            text-align: center;
+            position: relative;
+            border-radius: 0 0 20px 20px;
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+            font-weight: 800;
+            background: linear-gradient(to right, #FFD700, #FFA500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .nav-container {
+            display: flex;
+            justify-content: space-around;
+            background: white;
+            padding: 15px 0;
+            box-shadow: 0 -2px 15px rgba(0,0,0,0.08);
+            position: sticky;
+            bottom: 0;
+            z-index: 100;
+            border-radius: 20px 20px 0 0;
+            border-top: 2px solid rgba(157, 122, 214, 0.1);
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 0.85rem;
+            color: var(--dark);
+            opacity: 0.7;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 12px;
+        }
+        
+        .nav-item.active {
+            color: var(--primary);
+            opacity: 1;
+            background: linear-gradient(135deg, rgba(157, 122, 214, 0.1), rgba(126, 87, 194, 0.05));
+            transform: translateY(-5px);
+        }
+        
+        .content-area {
+            padding: 20px;
+            min-height: calc(100vh - 160px);
+            overflow-y: auto;
+            max-height: calc(95vh - 160px);
+            background: #F9F5FF;
+        }
+        
+        .section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .section.active {
+            display: block;
+        }
+        
+        /* قسم العدادات */
+        .counter-section {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 25px 0;
+        }
+        
+        .counter-item {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(240, 230, 255, 0.8));
+            border-radius: 20px;
+            padding: 20px 10px;
+            box-shadow: 0 8px 20px rgba(157, 122, 214, 0.15);
+            text-align: center;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .counter-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(157, 122, 214, 0.25);
+        }
+        
+        .counter-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 8px;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .counter-label {
+            font-size: 1rem;
+            color: var(--dark);
+            opacity: 0.9;
+            font-weight: 600;
+        }
+        
+        .date-display {
+            font-size: 1.1rem;
+            color: white;
+            background: rgba(0,0,0,0.2);
+            padding: 8px 20px;
+            border-radius: 25px;
+            margin-top: 15px;
+            display: inline-block;
+            backdrop-filter: blur(10px);
+        }
+        
+        .heart-main {
+            font-size: 70px;
+            color: #FFD700;
+            margin: 20px 0;
+            cursor: pointer;
+            display: inline-block;
+            text-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
+            animation: heartbeat 2s infinite;
+            transition: all 0.3s ease;
+        }
+        
+        .heart-main:hover {
+            transform: scale(1.1);
+            text-shadow: 0 0 35px rgba(255, 215, 0, 0.7);
+        }
+        
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            5% { transform: scale(1.1); }
+            10% { transform: scale(1); }
+            15% { transform: scale(1.15); }
+            20% { transform: scale(1); }
+            100% { transform: scale(1); }
+        }
+        
+        .section-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(245, 240, 255, 0.9));
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(157, 122, 214, 0.15);
+            margin-bottom: 20px;
+            border: 2px solid rgba(255, 215, 0, 0.2);
+            backdrop-filter: blur(10px);
+        }
+        
+        .section-title {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+            text-align: center;
+            position: relative;
+            padding-bottom: 12px;
+            font-weight: 700;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 30%;
+            width: 40%;
+            height: 3px;
+            background: linear-gradient(to right, var(--primary), #FFD700);
+            border-radius: 3px;
+        }
+        
+        .message-box {
+            background: linear-gradient(135deg, rgba(209, 196, 233, 0.2), rgba(179, 157, 219, 0.15));
+            border-radius: 15px;
+            padding: 15px;
+            margin: 15px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        .message {
+            font-size: 1rem;
+            line-height: 1.8;
+            text-align: center;
+            color: var(--text);
+        }
+        
+        .memory-item {
+            background: white;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border-left: 4px solid var(--primary);
+            transition: all 0.3s ease;
+        }
+        
+        .memory-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 6px 15px rgba(157, 122, 214, 0.2);
+        }
+        
+        .memory-date {
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 20px 0;
+            justify-content: center;
+        }
+        
+        .btn {
+            background: linear-gradient(to right, var(--primary), #7E57C2);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 1rem;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(157, 122, 214, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(157, 122, 214, 0.4);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(to right, var(--blue), #219EBC);
+            box-shadow: 0 5px 15px rgba(33, 158, 188, 0.3);
+        }
+        
+        .btn-success {
+            background: linear-gradient(to right, var(--green), #8AC926);
+            box-shadow: 0 5px 15px rgba(138, 201, 38, 0.3);
+        }
+        
+        .btn-gold {
+            background: linear-gradient(to right, #FFD700, #FFA500);
+            color: #5D3B7A;
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+        }
+        
+        textarea {
+            width: 100%;
+            height: 120px;
+            padding: 15px;
+            border-radius: 15px;
+            border: 2px solid rgba(209, 196, 233, 0.7);
+            background: rgba(255, 255, 255, 0.95);
+            font-size: 1rem;
+            resize: vertical;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(157, 122, 214, 0.2);
+        }
+        
+        .love-meter {
+            width: 100%;
+            height: 20px;
+            background-color: rgba(240, 240, 240, 0.7);
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .love-progress {
+            height: 100%;
+            width: 0;
+            background: linear-gradient(to right, var(--primary), #FFD700, var(--purple));
+            border-radius: 10px;
+            transition: width 2.5s ease;
+        }
+        
+        .love-text {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 15px 0;
+            text-align: center;
+        }
+        
+        .saved-thoughts {
+            margin-top: 15px;
+            max-height: 350px;
+            overflow-y: auto;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 12px;
+            border: 2px dashed rgba(157, 122, 214, 0.3);
+        }
+        
+        .thought-item {
+            background: white;
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid var(--purple);
+            transition: all 0.3s ease;
+        }
+        
+        .thought-item:hover {
+            transform: translateX(5px);
+        }
+        
+        .thought-date {
+            font-size: 0.8rem;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .thought-author {
+            font-size: 0.7rem;
+            color: #FFA500;
+            margin-bottom: 3px;
+            font-weight: bold;
+        }
+        
+        .privacy-note {
+            background: rgba(209, 196, 233, 0.3);
+            border-radius: 12px;
+            padding: 12px;
+            margin: 12px 0;
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--dark);
+            border: 2px solid rgba(157, 122, 214, 0.4);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 15px 0;
+        }
+        
+        .stat-item {
+            background: white;
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            border: 2px solid rgba(209, 196, 233, 0.5);
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--dark);
+        }
+        
+        .notification {
+            position: fixed;
+            bottom: 80px;
+            right: 50%;
+            transform: translateX(50%) translateY(100px);
+            background: linear-gradient(135deg, var(--primary), #7E57C2);
+            color: white;
+            padding: 14px 24px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            opacity: 0;
+            transition: all 0.5s ease;
+            max-width: 85%;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        
+        .notification.show {
+            transform: translateX(50%) translateY(0);
+            opacity: 1;
+        }
+        
+        .user-indicator {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255, 215, 0, 0.2);
+            color: #FFD700;
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        /* الدردشة المصغرة في القسم الرئيسي */
+        .mini-chat-preview {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            margin: 15px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border: 2px solid rgba(157, 122, 214, 0.2);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .mini-chat-preview:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(157, 122, 214, 0.25);
+        }
+        
+        .mini-chat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .mini-chat-title {
+            font-weight: bold;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+        
+        .mini-chat-status {
+            font-size: 0.8rem;
+            color: #4CAF50;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .mini-chat-last-message {
+            color: var(--text);
+            opacity: 0.8;
+            font-size: 0.95rem;
+            padding: 8px 0;
+            border-top: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        .mini-chat-action {
+            text-align: center;
+            padding-top: 10px;
+            color: var(--primary);
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* تحسينات للجوال */
+        @media (max-width: 400px) {
+            .phone-container {
+                min-height: 100vh;
+                border-radius: 0;
+                max-width: 100%;
+            }
+            
+            .message-text {
+                font-size: 1.3rem !important;
+            }
+            
+            .chat-message {
+                max-width: 90%;
+            }
+            
+            .header {
+                padding: 20px 10px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+        }
+        
+        /* عناوين الدردشة */
+        .chat-date-divider {
+            text-align: center;
+            margin: 15px 0;
+            position: relative;
+        }
+        
+        .chat-date-divider span {
+            background: rgba(157, 122, 214, 0.1);
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            color: var(--primary);
+            font-weight: 500;
+        }
+        
+        .file-input {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-container">
+        <!-- شاشة كلمة السر -->
+        <div class="password-screen" id="passwordScreen">
+            <div class="password-icon">
+                <i class="fas fa-heart-circle-check"></i>
+            </div>
+            <h2>الاسرة ✨♥</h2>
+            <div class="password-subtitle">مساحتنا الخاصة لذكرياتنا الجميلة</div>
+            <div class="password-input-container">
+                <input type="password" class="password-input" id="passwordInput" placeholder="⚫ ⚫ ⚫ ⚫" maxlength="4" autocomplete="off">
+                <button class="toggle-password" id="togglePassword">
+                    <i class="fas fa-eye"></i>
+                </button>
+            </div>
+            <button class="password-btn" onclick="checkPassword()">
+                <i class="fas fa-lock-open"></i> دخول للموقع
+            </button>
+            <div class="password-error" id="passwordError">كلمة السر غير صحيحة</div>
+            
+            <!-- رسالة خصوصية -->
+            <div class="privacy-message">
+                <i class="fas fa-shield-alt"></i> 
+                <strong>خصوصية تامة</strong><br>
+                كلمة السر خاصة بكل طرف. لا تشاركها مع أحد
+            </div>
+        </div>
+        
+        <!-- الدردشة الكاملة (تظهر عند الضغط على الدردشة) -->
+        <div class="fullscreen-chat-section" id="fullscreenChat">
+            <div class="chat-header">
+                <div class="chat-partner-info">
+                    <div class="partner-avatar">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <div class="partner-details">
+                        <h4>دردشة الاسرة 💬</h4>
+                        <span class="online-status">
+                            <span class="status-dot"></span>
+                            <span id="fullscreenPartnerStatus">متصل الآن</span>
+                        </span>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div class="chat-actions">
+                        <button class="chat-btn" onclick="toggleChatNotifications()" title="الإشعارات">
+                            <i class="fas fa-bell"></i>
+                        </button>
+                        <button class="chat-btn" onclick="clearChat()" title="مسح الدردشة">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                        <button class="chat-btn" onclick="exportChat()" title="نسخ الدردشة">
+                            <i class="fas fa-download"></i>
+                        </button>
+                    </div>
+                    <button class="exit-chat-btn" onclick="exitFullscreenChat()" title="رجوع">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="chat-messages" id="fullscreenChatMessages">
+                <!-- الرسائل تظهر هنا -->
+                <div class="welcome-message" style="text-align: center; padding: 40px 20px;">
+                    <i class="fas fa-comments" style="font-size: 4rem; color: var(--primary); margin-bottom: 20px; opacity: 0.7;"></i>
+                    <h3 style="color: var(--primary); margin-bottom: 15px; font-size: 1.8rem;">مرحباً في دردشة الاسرة! 💬</h3>
+                    <p style="color: var(--text); opacity: 0.8; font-size: 1.1rem;">ابدأ المحادثة الآن. كل رسالة هنا تظهر فوراً للطرف الآخر</p>
+                </div>
+            </div>
+            
+            <div class="typing-indicator" id="fullscreenTypingIndicator">
+                <span><i class="fas fa-pencil-alt"></i> <span id="fullscreenTypingUser"></span> يكتب...</span>
+            </div>
+            
+            <div class="chat-input-container">
+                <div class="input-actions">
+                    <button class="input-btn" onclick="attachFileToChat()" title="إرفاق ملف">
+                        <i class="fas fa-paperclip"></i>
+                    </button>
+                    <button class="input-btn" onclick="showEmojiPicker()" title="إيموجي">
+                        <i class="far fa-smile"></i>
+                    </button>
+                </div>
+                
+                <textarea 
+                    id="fullscreenChatInput" 
+                    placeholder="اكتب رسالتك هنا..."
+                    rows="1"
+                    onkeypress="handleFullscreenChatInputKeyPress(event)"
+                    oninput="handleChatTyping()"
+                ></textarea>
+                
+                <button class="send-btn" onclick="sendFullscreenChatMessage()" title="إرسال">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- المحتوى الرئيسي -->
+        <div class="header">
+            <h1>الاسرة ✨♥</h1>
+            <div class="subtitle">مساحتنا الخاصة لحبنا وذكرياتنا</div>
+            <div class="date-display" id="startDateDisplay">بدأ العد من: 20 نوفمبر 2025</div>
+            <div class="current-user" id="currentUserDisplay">مرحباً يا حبيبي ❤️</div>
+            <div class="heart-main" onclick="showLoveMeter()">
+                <i class="fas fa-heart"></i>
+            </div>
+        </div>
+        
+        <div class="user-indicator" id="userIndicator">
+            <i class="fas fa-user"></i> <span id="userName">الاء</span>
+        </div>
+        
+        <div class="content-area" id="contentArea">
+            <!-- القسم الرئيسي -->
+            <div class="section active" id="counters-section">
+                <div class="counter-section">
+                    <div class="counter-item">
+                        <div class="counter-value" id="days">39</div>
+                        <div class="counter-label">أيام</div>
+                    </div>
+                    <div class="counter-item">
+                        <div class="counter-value" id="hours">00</div>
+                        <div class="counter-label">ساعات</div>
+                    </div>
+                    <div class="counter-item">
+                        <div class="counter-value" id="minutes">00</div>
+                        <div class="counter-label">دقائق</div>
+                    </div>
+                    <div class="counter-item">
+                        <div class="counter-value" id="seconds">00</div>
+                        <div class="counter-label">ثواني</div>
+                    </div>
+                </div>
+                
+                <button class="toggle-details" onclick="toggleCounterDetails()">إظهار التفاصيل</button>
+                
+                <div class="counter-details" id="counterDetails">
+                    <div class="counter-details-item">بدأ العد من: <strong>20 نوفمبر 2025</strong></div>
+                    <div class="counter-details-item">تاريخ اليوم: <strong id="currentDate"></strong></div>
+                    <div class="counter-details-item">إجمالي الثواني: <strong id="totalSeconds">3,369,600</strong></div>
+                </div>
+                
+                <div class="section-card">
+                    <h3 class="section-title">رسالة حب ✨</h3>
+                    <div class="message-box">
+                        <div class="message">
+                            كل يوم بيمر وقلبي بيحبك أكتر.. كل لحظة معاكي بتخلي حياتي أجمل وأحلى ❤️
+                        </div>
+                    </div>
+                    
+                    <div class="love-meter">
+                        <div class="love-progress" id="loveProgress"></div>
+                    </div>
+                    <div class="love-text" id="loveText"></div>
+                    
+                    <div class="controls">
+                        <button class="btn btn-gold" onclick="showFlowers()">
+                            <i class="fas fa-spa"></i> ابعتلك ورد
+                        </button>
+                        <button class="btn" onclick="showLoveMeter()">
+                            <i class="fas fa-heartbeat"></i> شوف قد إيه بحبك
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- معاينة الدردشة المصغرة -->
+                <div class="section-card">
+                    <h3 class="section-title">دردشتنا الحية 💬</h3>
+                    <div class="mini-chat-preview" onclick="openFullscreenChat()">
+                        <div class="mini-chat-header">
+                            <div class="mini-chat-title">دردشة الاسرة</div>
+                            <div class="mini-chat-status">
+                                <span class="status-dot"></span>
+                                <span id="miniChatStatus">متصل</span>
+                            </div>
+                        </div>
+                        <div class="mini-chat-last-message" id="miniChatLastMessage">
+                            ابدأ المحادثة الآن...
+                        </div>
+                        <div class="mini-chat-action">
+                            <i class="fas fa-expand"></i> اضغط لفتح الدردشة الكاملة
+                        </div>
+                    </div>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-value" id="miniTotalMessages">0</div>
+                            <div class="stat-label">رسائل إجمالي</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="miniTodayMessages">0</div>
+                            <div class="stat-label">رسائل اليوم</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="miniAlaaMessages">0</div>
+                            <div class="stat-label">رسائل الاء</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="miniAyadMessages">0</div>
+                            <div class="stat-label">رسائل اياد</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="section-card">
+                    <h3 class="section-title">رسائلنا المشتركة 💌</h3>
+                    <div class="message-box shared">
+                        <div class="message">
+                            <div class="author-tag">الاء</div>
+                            كل ما اكتب حاجه هنا تقدر تشوفها يا حبيبي ❤️
+                        </div>
+                    </div>
+                    
+                    <textarea id="sharedMessage" placeholder="اكتب رسالة حلوة للطرف الآخر..."></textarea>
+                    
+                    <div class="controls">
+                        <button class="btn" onclick="saveSharedMessageToAll()">
+                            <i class="fas fa-users"></i> إرسال للكل
+                        </button>
+                        <button class="btn" onclick="saveSharedMessageTo('alaa')" style="background: linear-gradient(to right, #FF6B9D, #FF4081);">
+                            <i class="fas fa-female"></i> إرسال للاء فقط
+                        </button>
+                        <button class="btn" onclick="saveSharedMessageTo('ayad')" style="background: linear-gradient(to right, #4A90E2, #357ABD);">
+                            <i class="fas fa-male"></i> إرسال لاياد فقط
+                        </button>
+                    </div>
+                    
+                    <div class="privacy-note">
+                        <i class="fas fa-info-circle"></i> يمكنك إرسال الرسالة للطرفين معاً أو لأحدهما فقط
+                    </div>
+                    
+                    <div class="saved-thoughts" id="sharedMessages">
+                        <!-- الرسائل المشتركة تظهر هنا -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- قسم الدردشة المصغرة في القائمة -->
+            <div class="section" id="chat-section">
+                <div class="section-card">
+                    <h3 class="section-title">الدردشة الحية 💬</h3>
+                    <div class="message-box">
+                        <div class="message">
+                            اضغط على الزر أدناه لفتح الدردشة الكاملة على كامل الشاشة
+                        </div>
+                    </div>
+                    
+                    <div class="controls">
+                        <button class="btn" onclick="openFullscreenChat()" style="background: linear-gradient(to right, var(--primary), #7E57C2); padding: 15px 30px; font-size: 1.1rem;">
+                            <i class="fas fa-expand"></i> فتح الدردشة الكاملة
+                        </button>
+                    </div>
+                    
+                    <div class="privacy-note">
+                        <i class="fas fa-mobile-alt"></i> الدردشة تعمل بكامل الشاشة للراحة والوضوح
+                    </div>
+                </div>
+                
+                <div class="section-card">
+                    <h3 class="section-title">إحصائيات الدردشة 📊</h3>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-value" id="chatTotalMessages">0</div>
+                            <div class="stat-label">رسائل إجمالي</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="chatTodayMessages">0</div>
+                            <div class="stat-label">رسائل اليوم</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="chatAlaaMessages">0</div>
+                            <div class="stat-label">رسائل الاء</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="chatAyadMessages">0</div>
+                            <div class="stat-label">رسائل اياد</div>
+                        </div>
+                    </div>
+                    <div style="text-align: center; margin-top: 15px; color: var(--text); opacity: 0.7; font-size: 0.9rem;">
+                        <i class="fas fa-info-circle"></i> يتم تحديث الإحصائيات تلقائياً
+                    </div>
+                </div>
+            </div>
+            
+            <!-- قسم الذكريات -->
+            <div class="section" id="memories-section">
+                <div class="section-card">
+                    <h3 class="section-title">ذكريات حلوة 🎈</h3>
+                    <div class="memory-item">
+                        <div class="memory-date">أول مرة شفتك ✨</div>
+                        <div>اليوم اللي قلبقلق اختلف وبدأت حكاية جديدة</div>
+                    </div>
+                    <div class="memory-item">
+                        <div class="memory-date">أول مرة اتكلمنا 🎵</div>
+                        <div>صوتك خلى الدنيا كلها تبان حلوة</div>
+                    </div>
+                    <div class="memory-item">
+                        <div class="memory-date">أول ضحكة 😂</div>
+                        <div>أحلى ضحكة في الدنيا كلها</div>
+                    </div>
+                    
+                    <div class="controls">
+                        <button class="btn" onclick="addMemory()">
+                            <i class="fas fa-plus"></i> أضف ذكرى جديدة
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="section-card">
+                    <h3 class="section-title">أحلامنا مع بعض 🌟</h3>
+                    <div class="message-box">
+                        <div class="message">
+                            عندنا أحلام كتير عايزين نحققها سوا.. وكل يوم بنخطط لليوم اللي بعده ❤️
+                        </div>
+                    </div>
+                    
+                    <div class="memory-item">
+                        <div class="memory-date">رحلة العمر ✈️</div>
+                        <div>عايزين نسافر سوا لأجمل مكان في الدنيا</div>
+                    </div>
+                    <div class="memory-item">
+                        <div class="memory-date">البيت الصغير 🏡</div>
+                        <div>نبني بيتنا الصغير اللي هيكون مليان حب وذكريات</div>
+                    </div>
+                    <div class="memory-item">
+                        <div class="memory-date">مستقبلنا 🌈</div>
+                        <div>كل خطوة هناخدها سوا هنعمل بيها حكاية جديدة</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- قسم اليوميات (مُحسَّن) -->
+            <div class="section" id="notes-section">
+                <div class="section-card">
+                    <h3 class="section-title">يومياتنا الخاصة 📖</h3>
+                    <div class="message-box">
+                        <div class="message">
+                            اكتبي/اكتب كل اللي في قلبك هنا.. ذكريات، مشاعر، خطط، أي حاجة تخطر على بالك ✨<br>
+                            <span style="color: #FFA500; font-weight: bold;">الاثنين يشوفوا بعض كل اللي بيتكتب هنا! ❤️</span>
+                        </div>
+                    </div>
+                    
+                    <div class="privacy-note">
+                        <i class="fas fa-users"></i> <strong>مشترك بين الاثنين</strong> - كل المحتوى بيتشاف من الطرفين ❤️
+                    </div>
+                    
+                    <textarea id="notesText" placeholder="اكتب كل اللي في قلبك هنا..."></textarea>
+                    
+                    <!-- أزرار إضافة الملفات المحسنة -->
+                    <div class="media-buttons">
+                        <button class="media-button image" onclick="document.getElementById('imageInput').click()">
+                            <i class="fas fa-image fa-lg"></i>
+                            <span class="icon-label">صورة</span>
+                        </button>
+                        <button class="media-button video" onclick="document.getElementById('videoInput').click()">
+                            <i class="fas fa-video fa-lg"></i>
+                            <span class="icon-label">فيديو</span>
+                        </button>
+                        <button class="media-button audio" onclick="document.getElementById('audioInput').click()">
+                            <i class="fas fa-music fa-lg"></i>
+                            <span class="icon-label">صوت</span>
+                        </button>
+                        <button class="media-button other" onclick="document.getElementById('otherInput').click()">
+                            <i class="fas fa-file fa-lg"></i>
+                            <span class="icon-label">ملف</span>
+                        </button>
+                    </div>
+                    
+                    <!-- قسم عرض الملفات المرفقة -->
+                    <div class="media-attachments" id="mediaAttachments">
+                        <div style="text-align: center; color: #888; padding: 10px;">
+                            <i class="fas fa-paperclip"></i> لا توجد ملفات مرفقة بعد
+                        </div>
+                    </div>
+                    
+                    <div class="media-preview" id="mediaPreview"></div>
+                    
+                    <!-- حقول إدخال الملفات -->
+                    <input type="file" id="imageInput" class="file-input" accept="image/*" onchange="handleMediaSelect(this, 'image')">
+                    <input type="file" id="videoInput" class="file-input" accept="video/*" onchange="handleMediaSelect(this, 'video')">
+                    <input type="file" id="audioInput" class="file-input" accept="audio/*" onchange="handleMediaSelect(this, 'audio')">
+                    <input type="file" id="otherInput" class="file-input" onchange="handleMediaSelect(this, 'other')">
+                    
+                    <div class="controls">
+                        <button class="btn" onclick="saveNoteToAll()">
+                            <i class="fas fa-save"></i> حفظ وإرسال للكل
+                        </button>
+                        <button class="btn" onclick="saveNoteTo('alaa')" style="background: linear-gradient(to right, #FF6B9D, #FF4081);">
+                            <i class="fas fa-female"></i> حفظ وإرسال للاء
+                        </button>
+                        <button class="btn" onclick="saveNoteTo('ayad')" style="background: linear-gradient(to right, #4A90E2, #357ABD);">
+                            <i class="fas fa-male"></i> حفظ وإرسال لاياد
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- قائمة التنقل -->
+        <div class="nav-container">
+            <div class="nav-item active" onclick="changeSection('counters-section')">
+                <i class="nav-icon fas fa-heart"></i>
+                <span>الرئيسية</span>
+            </div>
+            <div class="nav-item" onclick="changeSection('memories-section')">
+                <i class="nav-icon fas fa-images"></i>
+                <span>ذكريات</span>
+            </div>
+            <div class="nav-item" onclick="changeSection('notes-section')">
+                <i class="nav-icon fas fa-book"></i>
+                <span>يوميات</span>
+            </div>
+            <div class="nav-item" onclick="changeSection('chat-section')">
+                <i class="nav-icon fas fa-comments"></i>
+                <span>دردشة</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- العناصر المتحركة -->
+    <div class="flowers" id="flowersContainer"></div>
+    <div class="hearts-container" id="heartsContainer"></div>
+    
+    <!-- الإشعارات -->
+    <div class="notification" id="notification"></div>
+
+    <!-- الكود JavaScript -->
+    <script>
+    // ==================== Firebase Configuration ====================
+    const firebaseConfig = {
+        apiKey: "AIzaSyBLOTRVui_Zdyl2_HylWJROtn0gR1cSuhs",
+        authDomain: "family-94192.firebaseapp.com",
+        projectId: "family-94192",
+        storageBucket: "family-94192.appspot.com",
+        messagingSenderId: "912577311810",
+        appId: "1:912577311810:web:f3037af72efc5fc3e4a18e",
+        measurementId: "G-LIFPMPRVC7"
+    };
+
+    // ==================== تهيئة Firebase ====================
+    let app;
+    let database;
+    let currentUser = "الاء";
+    let chatInitialized = false;
+    let startDate = new Date('2025-11-20T00:00:00');
+    let attachedFiles = [];
+
+    try {
+        app = firebase.initializeApp(firebaseConfig);
+        database = firebase.database();
+        console.log("✅ Firebase initialized successfully");
+    } catch (error) {
+        console.error("❌ Firebase initialization error:", error);
+        showNotification("⚠️ هناك مشكلة في الاتصال، الدردشة قد لا تعمل");
+    }
+
+    // ==================== دوال الدردشة المحسنة ====================
+    function openFullscreenChat() {
+        document.getElementById('fullscreenChat').classList.add('active');
+        document.body.style.overflow = 'hidden';
+        
+        // تهيئة الدردشة إذا لم تكن مهيأة
+        if (!chatInitialized) {
+            initializeChat();
+        }
+        
+        // تحميل الرسائل
+        setTimeout(() => {
+            loadFullscreenChatMessages();
+            showNotification("💬 الدردشة الكاملة مفتوحة!");
+        }, 100);
+        
+        // التركيز على حقل الإدخال
+        setTimeout(() => {
+            document.getElementById('fullscreenChatInput').focus();
+        }, 200);
+    }
+
+    function exitFullscreenChat() {
+        document.getElementById('fullscreenChat').classList.remove('active');
+        document.body.style.overflow = 'auto';
+        showNotification("تم الخروج من الدردشة الكاملة");
+    }
+
+    function initializeChat() {
+        if (!chatInitialized) {
+            chatInitialized = true;
+            console.log("✅ Chat initialized");
+            
+            // بدأ الاستماع للرسائل الجديدة
+            setupChatListener();
+        }
+    }
+
+    function setupChatListener() {
+        if (!database) {
+            console.error("❌ Firebase not initialized");
+            return;
+        }
+        
+        const messagesRef = database.ref('messages');
+        
+        // استمع للرسائل الجديدة
+        messagesRef.orderByChild('timestamp').limitToLast(50).on('value', (snapshot) => {
+            const messages = [];
+            snapshot.forEach((childSnapshot) => {
+                const message = childSnapshot.val();
+                messages.push({
+                    ...message,
+                    id: childSnapshot.key
+                });
+            });
+            
+            // عرض الرسائل في الدردشة الكاملة
+            displayFullscreenChatMessages(messages);
+            
+            // تحديث الإحصائيات
+            updateAllChatStats(messages);
+            
+            // تحديث آخر رسالة في المعاينة
+            updateMiniChatPreview(messages);
+        });
+    }
+
+    function loadFullscreenChatMessages() {
+        if (!database) return;
+        
+        const messagesRef = database.ref('messages');
+        
+        messagesRef.orderByChild('timestamp').limitToLast(50).once('value')
+            .then((snapshot) => {
+                const messages = [];
+                snapshot.forEach((childSnapshot) => {
+                    const message = childSnapshot.val();
+                    messages.push({
+                        ...message,
+                        id: childSnapshot.key
+                    });
+                });
+                
+                displayFullscreenChatMessages(messages);
+            })
+            .catch((error) => {
+                console.error("Error loading messages:", error);
+            });
+    }
+
+    function displayFullscreenChatMessages(messages) {
+        const chatContainer = document.getElementById('fullscreenChatMessages');
+        if (!chatContainer) return;
+        
+        // إفراغ المحتوى الحالي
+        chatContainer.innerHTML = '';
+        
+        if (messages.length === 0) {
+            chatContainer.innerHTML = `
+                <div style="text-align: center; padding: 40px 20px; color: var(--text); opacity: 0.7;">
+                    <i class="fas fa-comments" style="font-size: 3rem; margin-bottom: 15px;"></i>
+                    <h3 style="color: var(--primary); margin-bottom: 10px; font-size: 1.5rem;">ابدأ المحادثة الآن! 💬</h3>
+                    <p style="font-size: 1.1rem;">لا توجد رسائل بعد. كن أول من يرسل رسالة!</p>
+                </div>
+            `;
+            return;
+        }
+        
+        // فرز الرسائل حسب الوقت
+        messages.sort((a, b) => a.timestamp - b.timestamp);
+        
+        let lastDate = null;
+        
+        messages.forEach((msg) => {
+            const date = new Date(msg.timestamp);
+            const dateStr = date.toLocaleDateString('ar-EG', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            
+            // إضافة تاريخ جديد إذا اختلف
+            if (dateStr !== lastDate) {
+                const dateDiv = document.createElement('div');
+                dateDiv.className = 'chat-date-divider';
+                dateDiv.innerHTML = `<span><i class="far fa-calendar"></i> ${dateStr}</span>`;
+                chatContainer.appendChild(dateDiv);
+                lastDate = dateStr;
+            }
+            
+            // إنشاء عنصر الرسالة
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chat-message ${msg.sender === currentUser ? 'message-sent' : 'message-received'}`;
+            
+            const timeStr = date.toLocaleTimeString('ar-EG', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+            
+            messageDiv.innerHTML = `
+                <div class="message-content">
+                    <div class="message-sender">
+                        <i class="fas fa-user-circle"></i> ${msg.sender}
+                    </div>
+                    <div class="message-text">${msg.text || ''}</div>
+                    <div class="message-time">
+                        <i class="far fa-clock"></i> ${timeStr}
+                    </div>
+                </div>
+            `;
+            
+            chatContainer.appendChild(messageDiv);
+        });
+        
+        // التمرير لآخر رسالة
+        setTimeout(() => {
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }, 100);
+    }
+
+    function sendFullscreenChatMessage() {
+        const input = document.getElementById('fullscreenChatInput');
+        const messageText = input.value.trim();
+        
+        if (!messageText) {
+            showNotification("اكتب رسالة أولاً!");
+            return;
+        }
+        
+        if (!database) {
+            showNotification("❌ الدردشة غير متوفرة الآن. تأكد من اتصال الإنترنت");
+            return;
+        }
+        
+        // إنشاء الرسالة
+        const message = {
+            text: messageText,
+            sender: currentUser,
+            timestamp: Date.now(),
+            read: false
+        };
+        
+        // إرسال إلى Firebase
+        database.ref('messages').push(message)
+            .then(() => {
+                // مسح حقل الإدخال
+                input.value = '';
+                input.style.height = 'auto';
+                
+                // إخفاء مؤشر الكتابة
+                document.getElementById('fullscreenTypingIndicator').style.display = 'none';
+                
+                // إشعار بنجاح الإرسال
+                showNotification("✅ تم إرسال الرسالة!");
+            })
+            .catch((error) => {
+                console.error("Error sending message:", error);
+                showNotification("❌ فشل إرسال الرسالة. حاول مرة أخرى");
+            });
+    }
+
+    function handleFullscreenChatInputKeyPress(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendFullscreenChatMessage();
+        }
+    }
+
+    function updateMiniChatPreview(messages) {
+        if (messages.length > 0) {
+            const lastMessage = messages[messages.length - 1];
+            const previewElement = document.getElementById('miniChatLastMessage');
+            if (previewElement) {
+                const maxLength = 40;
+                let previewText = lastMessage.text;
+                if (previewText.length > maxLength) {
+                    previewText = previewText.substring(0, maxLength) + '...';
+                }
+                previewElement.textContent = `${lastMessage.sender}: ${previewText}`;
+            }
+        }
+    }
+
+    function updateAllChatStats(messages) {
+        const today = new Date().toLocaleDateString('ar-EG');
+        
+        const stats = {
+            total: messages.length,
+            today: messages.filter(m => 
+                new Date(m.timestamp).toLocaleDateString('ar-EG') === today
+            ).length,
+            alaa: messages.filter(m => m.sender === 'الاء').length,
+            ayad: messages.filter(m => m.sender === 'اياد').length
+        };
+        
+        // تحديث جميع الإحصائيات
+        const statElements = [
+            ['miniTotalMessages', stats.total],
+            ['miniTodayMessages', stats.today],
+            ['miniAlaaMessages', stats.alaa],
+            ['miniAyadMessages', stats.ayad],
+            ['chatTotalMessages', stats.total],
+            ['chatTodayMessages', stats.today],
+            ['chatAlaaMessages', stats.alaa],
+            ['chatAyadMessages', stats.ayad]
+        ];
+        
+        statElements.forEach(([id, value]) => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.textContent = value;
+            }
+        });
+    }
+
+    // ==================== دوال اليوميات والملفات ====================
+    function handleMediaSelect(input, type) {
+        if (!input.files || input.files.length === 0) return;
+        
+        const file = input.files[0];
+        const fileId = Date.now();
+        
+        // إضافة الملف إلى القائمة
+        attachedFiles.push({
+            id: fileId,
+            name: file.name,
+            type: type,
+            size: formatFileSize(file.size),
+            file: file
+        });
+        
+        // تحديث العرض
+        updateAttachmentsDisplay();
+        
+        showNotification(`📁 تم إضافة ${type === 'image' ? 'صورة' : type === 'video' ? 'فيديو' : type === 'audio' ? 'ملف صوتي' : 'ملف'}: ${file.name}`);
+        
+        // إعادة تعيين حقل الإدخال للسماح بإضافة نفس الملف مرة أخرى
+        input.value = '';
+    }
+
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 ب';
+        const k = 1024;
+        const sizes = ['ب', 'ك.ب', 'م.ب', 'ج.ب'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    function updateAttachmentsDisplay() {
+        const container = document.getElementById('mediaAttachments');
+        
+        if (attachedFiles.length === 0) {
+            container.innerHTML = `
+                <div style="text-align: center; color: #888; padding: 10px;">
+                    <i class="fas fa-paperclip"></i> لا توجد ملفات مرفقة بعد
+                </div>
+            `;
+            return;
+        }
+        
+        container.innerHTML = '';
+        
+        attachedFiles.forEach((file, index) => {
+            const attachmentElement = document.createElement('div');
+            attachmentElement.className = 'attachment-item';
+            
+            // تحديد الأيقونة المناسبة حسب نوع الملف
+            let icon = 'fa-file';
+            if (file.type === 'image') icon = 'fa-image';
+            else if (file.type === 'video') icon = 'fa-video';
+            else if (file.type === 'audio') icon = 'fa-music';
+            
+            attachmentElement.innerHTML = `
+                <div class="attachment-icon">
+                    <i class="fas ${icon}"></i>
+                </div>
+                <div class="attachment-details">
+                    <div class="attachment-name">${file.name}</div>
+                    <div class="attachment-size">${file.size}</div>
+                </div>
+                <div class="attachment-actions">
+                    <button class="attachment-btn" onclick="previewAttachment(${index})" title="معاينة">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="attachment-btn" onclick="removeAttachment(${index})" title="إزالة">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `;
+            
+            container.appendChild(attachmentElement);
+        });
+    }
+
+    function removeAttachment(index) {
+        if (index >= 0 && index < attachedFiles.length) {
+            const removedFile = attachedFiles.splice(index, 1)[0];
+            showNotification(`🗑️ تم إزالة الملف: ${removedFile.name}`);
+            updateAttachmentsDisplay();
+        }
+    }
+
+    function previewAttachment(index) {
+        if (index >= 0 && index < attachedFiles.length) {
+            const file = attachedFiles[index];
+            
+            if (file.type === 'image') {
+                // معاينة الصورة
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('mediaPreview');
+                    preview.innerHTML = `
+                        <div class="preview-item">
+                            <img src="${e.target.result}" alt="${file.name}">
+                            <button class="remove-media" onclick="closePreview()">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    `;
+                    preview.classList.add('active');
+                };
+                reader.readAsDataURL(file.file);
+                
+            } else if (file.type === 'video') {
+                // معاينة الفيديو
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('mediaPreview');
+                    preview.innerHTML = `
+                        <div class="preview-item">
+                            <video controls>
+                                <source src="${e.target.result}" type="${file.file.type}">
+                                متصفحك لا يدعم تشغيل الفيديو
+                            </video>
+                            <button class="remove-media" onclick="closePreview()">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    `;
+                    preview.classList.add('active');
+                };
+                reader.readAsDataURL(file.file);
+                
+            } else if (file.type === 'audio') {
+                // معاينة الصوت
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('mediaPreview');
+                    preview.innerHTML = `
+                        <div class="audio-preview">
+                            <audio controls style="width: 100%;">
+                                <source src="${e.target.result}" type="${file.file.type}">
+                                متصفحك لا يدعم تشغيل الصوت
+                            </audio>
+                            <button class="remove-media" onclick="closePreview()" style="position: relative; top: auto; right: auto; margin-top: 10px;">
+                                <i class="fas fa-times"></i> إغلاق المعاينة
+                            </button>
+                        </div>
+                    `;
+                    preview.classList.add('active');
+                };
+                reader.readAsDataURL(file.file);
+                
+            } else {
+                // للملفات الأخرى
+                showNotification(`📄 ملف: ${file.name} (${file.size})`);
+            }
+        }
+    }
+
+    function closePreview() {
+        const preview = document.getElementById('mediaPreview');
+        preview.innerHTML = '';
+        preview.classList.remove('active');
+    }
+
+    // ==================== دوال التحقق من كلمة السر ====================
+    function checkPassword() {
+        const password = document.getElementById('passwordInput').value;
+        const errorElement = document.getElementById('passwordError');
+        
+        if (password === '2025') {
+            currentUser = 'الاء';
+            document.getElementById('userName').textContent = 'الاء';
+            document.getElementById('currentUserDisplay').innerHTML = 'مرحباً يا روحي ❤️';
+            showMainApp();
+            initializeChat();
+            showNotification(`مرحباً ${currentUser}! ❤️`);
+            
+        } else if (password === '2024') {
+            currentUser = 'اياد';
+            document.getElementById('userName').textContent = 'اياد';
+            document.getElementById('currentUserDisplay').innerHTML = 'مرحباً يا حبيبي ❤️';
+            showMainApp();
+            initializeChat();
+            showNotification(`مرحباً ${currentUser}! ❤️`);
+            
+        } else {
+            errorElement.style.display = 'block';
+            document.getElementById('passwordInput').value = '';
+            setTimeout(() => {
+                errorElement.style.display = 'none';
+            }, 2000);
+        }
+    }
+
+    function showMainApp() {
+        document.getElementById('passwordScreen').style.display = 'none';
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+    }
+
+    // ==================== دوال التنقل ====================
+    function changeSection(sectionId) {
+        // إخفاء كل الأقسام
+        document.querySelectorAll('.section').forEach(section => {
+            section.classList.remove('active');
+        });
+        
+        // إزالة النشاط من كل عناصر القائمة
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        
+        // إظهار القسم المطلوب
+        const targetSection = document.getElementById(sectionId);
+        if (targetSection) {
+            targetSection.classList.add('active');
+        }
+        
+        // تفعيل العنصر المناسب في القائمة
+        const navItem = document.querySelector(`[onclick="changeSection('${sectionId}')"]`);
+        if (navItem) {
+            navItem.classList.add('active');
+        }
+        
+        // إذا كان القسم هو الدردشة، تأكد من تحميل الرسائل
+        if (sectionId === 'chat-section') {
+            setTimeout(() => {
+                if (!chatInitialized) {
+                    initializeChat();
+                }
+            }, 100);
+        }
+    }
+
+    // ==================== دوال مساعدة ====================
+    function togglePasswordVisibility() {
+        const passwordInput = document.getElementById('passwordInput');
+        const toggleIcon = document.getElementById('togglePassword').querySelector('i');
+        
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            toggleIcon.className = 'fas fa-eye-slash';
+        } else {
+            passwordInput.type = 'password';
+            toggleIcon.className = 'fas fa-eye';
+        }
+    }
+
+    function showNotification(text) {
+        const notification = document.getElementById('notification');
+        notification.textContent = text;
+        notification.classList.add('show');
+        
+        setTimeout(() => {
+            notification.classList.remove('show');
+        }, 3000);
+    }
+
+    // ==================== دوال الموقع الأساسية ====================
+    function updateCountdown() {
+        const now = new Date();
+        const diff = now - startDate;
+        
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+        
+        if (document.getElementById('days')) {
+            document.getElementById('days').textContent = days;
+            document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+            document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+            document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+            
+            const totalSeconds = Math.floor(diff / 1000);
+            document.getElementById('totalSeconds').textContent = totalSeconds.toLocaleString();
+            
+            document.getElementById('currentDate').textContent = now.toLocaleDateString('ar-EG', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+    }
+
+    function toggleCounterDetails() {
+        const details = document.getElementById('counterDetails');
+        const button = document.querySelector('.toggle-details');
+        
+        if (details.classList.contains('active')) {
+            details.classList.remove('active');
+            button.textContent = 'إظهار التفاصيل';
+        } else {
+            details.classList.add('active');
+            button.textContent = 'إخفاء التفاصيل';
+        }
+    }
+
+    function showLoveMeter() {
+        const progress = document.getElementById('loveProgress');
+        const loveText = document.getElementById('loveText');
+        
+        let percentage = 0;
+        const interval = setInterval(() => {
+            percentage += Math.random() * 5;
+            if (percentage >= 100) {
+                percentage = 100;
+                clearInterval(interval);
+                
+                const messages = [
+                    "بحبك أكتر من أي حاجة في الدنيا! ❤️",
+                    "قلبي ملكك للأبد! 💖",
+                    "أنت أحلى حكاية في حياتي! ✨",
+                    "بحبك لدرجة ما تتخيل! 🌟",
+                    "أنت كل أحلامي اللي تحققت! 💫"
+                ];
+                
+                loveText.textContent = messages[Math.floor(Math.random() * messages.length)];
+                showNotification("❤️ حبي لك لا ينتهي!");
+            }
+            
+            progress.style.width = percentage + '%';
+        }, 50);
+    }
+
+    function showFlowers() {
+        const container = document.getElementById('flowersContainer');
+        const flowers = ['🌸', '🌺', '🌷', '🌹', '💐', '🌼', '🌻'];
+        
+        for (let i = 0; i < 20; i++) {
+            const flower = document.createElement('div');
+            flower.className = 'flower';
+            flower.innerHTML = flowers[Math.floor(Math.random() * flowers.length)];
+            flower.style.left = Math.random() * 100 + 'vw';
+            flower.style.animationDelay = Math.random() * 5 + 's';
+            container.appendChild(flower);
+            
+            setTimeout(() => {
+                flower.remove();
+            }, 8000);
+        }
+        
+        showNotification("💐 بعثت لك وردة حب!");
+    }
+
+    // ==================== دوال الرسائل المشتركة ====================
+    function loadSharedMessages() {
+        if (!database) return;
+        
+        const messagesRef = database.ref('sharedMessages');
+        
+        messagesRef.orderByChild('timestamp').limitToLast(20).on('value', (snapshot) => {
+            const container = document.getElementById('sharedMessages');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            const messages = [];
+            snapshot.forEach((childSnapshot) => {
+                messages.push(childSnapshot.val());
+            });
+            
+            messages.sort((a, b) => b.timestamp - a.timestamp);
+            
+            if (messages.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; color: #999; padding: 20px;">
+                        <i class="fas fa-envelope" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                        <p>لا توجد رسائل مشتركة بعد</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            messages.forEach((msg) => {
+                const messageElement = document.createElement('div');
+                messageElement.className = 'thought-item';
+                
+                const msgDate = new Date(msg.timestamp);
+                const dateString = msgDate.toLocaleDateString('ar-EG', {
+                    weekday: 'short',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                let privacyIcon = '👥 للكل';
+                if (msg.privacy === 'alaa') privacyIcon = '👩 للاء فقط';
+                else if (msg.privacy === 'ayad') privacyIcon = '👨 لاياد فقط';
+                
+                messageElement.innerHTML = `
+                    <div class="thought-date">
+                        ${dateString} - ${privacyIcon}
+                    </div>
+                    <div class="thought-author">${msg.sender}</div>
+                    <div class="thought-text">${msg.text}</div>
+                `;
+                
+                container.appendChild(messageElement);
+            });
+        });
+    }
+
+    function saveSharedMessageToAll() {
+        if (!database) {
+            showNotification("❌ لا يمكن إرسال الرسالة الآن");
+            return;
+        }
+        
+        const messageText = document.getElementById('sharedMessage').value.trim();
+        if (!messageText) {
+            showNotification("✍️ اكتب رسالة أولاً!");
+            return;
+        }
+        
+        const message = {
+            text: messageText,
+            sender: currentUser,
+            timestamp: Date.now(),
+            type: 'shared',
+            privacy: 'all'
+        };
+        
+        database.ref('sharedMessages').push(message)
+            .then(() => {
+                document.getElementById('sharedMessage').value = '';
+                showNotification("✅ تم إرسال الرسالة للكل ❤️");
+            })
+            .catch((error) => {
+                console.error("Error saving message:", error);
+                showNotification("❌ حدث خطأ في الإرسال!");
+            });
+    }
+
+    function saveSharedMessageTo(user) {
+        if (!database) {
+            showNotification("❌ لا يمكن إرسال الرسالة الآن");
+            return;
+        }
+        
+        const messageText = document.getElementById('sharedMessage').value.trim();
+        if (!messageText) {
+            showNotification("✍️ اكتب رسالة أولاً!");
+            return;
+        }
+        
+        const message = {
+            text: messageText,
+            sender: currentUser,
+            timestamp: Date.now(),
+            type: 'shared',
+            privacy: user,
+            recipient: user
+        };
+        
+        database.ref('sharedMessages').push(message)
+            .then(() => {
+                document.getElementById('sharedMessage').value = '';
+                const recipientName = user === 'alaa' ? 'الاء' : 'اياد';
+                showNotification(`✅ تم إرسال الرسالة لـ${recipientName} فقط`);
+            })
+            .catch((error) => {
+                console.error("Error saving message:", error);
+                showNotification("❌ حدث خطأ في الإرسال!");
+            });
+    }
+
+    // ==================== دوال الذكريات ====================
+    function addMemory() {
+        const memoryText = prompt("اكتب الذكرى الجديدة:");
+        if (memoryText) {
+            showNotification("✅ تمت إضافة الذكرى!");
+        }
+    }
+
+    // ==================== دوال اليوميات ====================
+    function saveNoteToAll() {
+        const noteText = document.getElementById('notesText').value.trim();
+        
+        if (!noteText && attachedFiles.length === 0) {
+            showNotification("✍️ اكتب شيئاً أو أضف ملفاً أولاً!");
+            return;
+        }
+        
+        let message = "✅ تم حفظ اليومية للكل!";
+        
+        if (attachedFiles.length > 0) {
+            message += ` مع ${attachedFiles.length} ملف مرفق`;
+        }
+        
+        showNotification(message);
+        
+        // إعادة تعيين الحقول
+        document.getElementById('notesText').value = '';
+        attachedFiles = [];
+        updateAttachmentsDisplay();
+        closePreview();
+    }
+
+    function saveNoteTo(user) {
+        const noteText = document.getElementById('notesText').value.trim();
+        
+        if (!noteText && attachedFiles.length === 0) {
+            showNotification("✍️ اكتب شيئاً أو أضف ملفاً أولاً!");
+            return;
+        }
+        
+        const recipient = user === 'alaa' ? 'الاء' : 'اياد';
+        let message = `✅ تم حفظ اليومية لـ${recipient} فقط!`;
+        
+        if (attachedFiles.length > 0) {
+            message += ` مع ${attachedFiles.length} ملف مرفق`;
+        }
+        
+        showNotification(message);
+        
+        // إعادة تعيين الحقول
+        document.getElementById('notesText').value = '';
+        attachedFiles = [];
+        updateAttachmentsDisplay();
+        closePreview();
+    }
+
+    // ==================== دوال الدردشة العامة ====================
+    function clearChat() {
+        if (!database) {
+            showNotification("❌ الدردشة غير متاحة الآن");
+            return;
+        }
+        
+        if (confirm("⚠️ هل أنت متأكد من مسح كل الرسائل؟ لا يمكن التراجع عن هذا الإجراء!")) {
+            database.ref('messages').remove()
+                .then(() => {
+                    showNotification("🗑️ تم مسح الدردشة بنجاح");
+                })
+                .catch((error) => {
+                    console.error("Error clearing chat:", error);
+                    showNotification("❌ خطأ في مسح الدردشة");
+                });
+        }
+    }
+
+    function exportChat() {
+        if (!database) {
+            showNotification("❌ الدردشة غير متاحة الآن");
+            return;
+        }
+        
+        const messagesRef = database.ref('messages');
+        
+        messagesRef.once('value')
+            .then((snapshot) => {
+                const messages = [];
+                snapshot.forEach((childSnapshot) => {
+                    messages.push(childSnapshot.val());
+                });
+                
+                messages.sort((a, b) => a.timestamp - b.timestamp);
+                
+                const chatText = messages.map(msg => 
+                    `[${new Date(msg.timestamp).toLocaleString('ar-EG')}] ${msg.sender}: ${msg.text}`
+                ).join('\n\n');
+                
+                navigator.clipboard.writeText(chatText)
+                    .then(() => {
+                        showNotification("📋 تم نسخ الدردشة إلى الحافظة!");
+                    })
+                    .catch(() => {
+                        // Fallback for older browsers
+                        const textArea = document.createElement('textarea');
+                        textArea.value = chatText;
+                        document.body.appendChild(textArea);
+                        textArea.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(textArea);
+                        showNotification("📋 تم نسخ الدردشة إلى الحافظة!");
+                    });
+            })
+            .catch((error) => {
+                console.error("Error exporting chat:", error);
+                showNotification("❌ خطأ في نسخ الدردشة");
+            });
+    }
+
+    function toggleChatNotifications() {
+        showNotification("🔔 إشعارات الدردشة مفعلة");
+    }
+
+    function attachFileToChat() {
+        showNotification("📎 يمكنك إضافة المرفقات من قسم اليوميات");
+    }
+
+    function showEmojiPicker() {
+        const emojis = ['❤️', '😍', '😂', '😊', '🥰', '😘', '👍', '👌', '😎', '🤗', '🎉', '✨'];
+        const input = document.getElementById('fullscreenChatInput');
+        const emoji = emojis[Math.floor(Math.random() * emojis.length)];
+        input.value += emoji;
+        input.focus();
+    }
+
+    function handleChatTyping() {
+        // يمكن إضافة خاصية الكتابة هنا
+        const input = document.getElementById('fullscreenChatInput');
+        input.style.height = 'auto';
+        input.style.height = Math.min(input.scrollHeight, 150) + 'px';
+    }
+
+    // ==================== تهيئة الصفحة ====================
+    document.addEventListener('DOMContentLoaded', function() {
+        // تهيئة زر إظهار/إخفاء كلمة السر
+        document.getElementById('togglePassword').addEventListener('click', togglePasswordVisibility);
+        
+        // السماح بالدخول بالضغط على Enter في حقل كلمة السر
+        document.getElementById('passwordInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkPassword();
+            }
+        });
+        
+        // تكبير حقل الدردشة الكاملة تلقائياً
+        const chatInput = document.getElementById('fullscreenChatInput');
+        if (chatInput) {
+            chatInput.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = Math.min(this.scrollHeight, 150) + 'px';
+            });
+        }
+        
+        // تكبير حقل الرسائل المشتركة تلقائياً
+        const sharedMessage = document.getElementById('sharedMessage');
+        if (sharedMessage) {
+            sharedMessage.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = Math.min(this.scrollHeight, 200) + 'px';
+            });
+        }
+        
+        // تهيئة التاريخ الحالي
+        updateCountdown();
+        
+        // تحميل الرسائل المشتركة
+        if (database) {
+            loadSharedMessages();
+        }
+        
+        console.log("🚀 تطبيق الاسرة جاهز!");
+        
+        // إغلاق الدردشة الكاملة بالزر الخلفي في الجوال
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                exitFullscreenChat();
+            }
+        });
+    });
+    </script>
+</body>
+</html>
